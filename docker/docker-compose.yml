@@ -1,0 +1,34 @@
+version: '3.5'
+
+networks:
+  frontend:
+    driver: bridge
+  backend:
+    driver: bridge
+
+services:
+
+### NGINX Server #########################################
+    nginx:
+      build:
+        context: ./nginx
+      volumes:
+        - ../:/var/www:cached
+        - ./nginx/sites/:/etc/nginx/sites-available
+      ports:
+        - "8002:80"
+      depends_on:
+        - php-fpm
+      networks:
+        - frontend
+        - backend
+
+### PHP-FPM ##############################################
+    php-fpm:
+      image: php:7.1-fpm
+      volumes:
+        - ../:/var/www:cached
+      expose:
+        - "9000"
+      networks:
+        - backend
